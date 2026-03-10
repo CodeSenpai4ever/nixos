@@ -118,20 +118,50 @@ programs.steam = {
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
+  virtualisation.docker.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.kronii = {
     isNormalUser = true;
     description = "kronii";
-    extraGroups = [ "networkmanager" "wheel" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "docker" ];
     packages = with pkgs; [
       kdePackages.kate
       kitty
       element-desktop
       wofi
-    #  thunderbird
     ];
+    shell = pkgs.zsh;
   };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    enableBashCompletion = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    histSize = 10000;
+    shellAliases = {
+      ff = "hyfetch";
+      ll = "ls -l";
+      update = "sudo nixos-rebuild switch";
+    };
+    setOptions = [
+      "AUTO_CD"
+    ];
+    ohMyZsh = {
+      enable = true;
+      plugins = [
+      "git"
+      "dirhistory"
+      "history"
+      ];
+      theme= "eastwood";
+    };
+  };
+  users.defaultUserShell = pkgs.zsh;
+  system.userActivationScripts.zshrc = "touch .zshrc";
+  environment.shells = with pkgs; [ zsh ];
 
   # Install firefox.
   programs.firefox.enable = true;

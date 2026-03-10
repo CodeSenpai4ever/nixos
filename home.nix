@@ -1,5 +1,4 @@
-{ config, pkgs, inputs, ... }:
-
+{ config, pkgs, inputs, lib, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -28,10 +27,13 @@
     # # "Hello, world!" when run.
     pkgs.hello
     pkgs.jetbrains.idea
-    pkgs.zsh
     pkgs.oh-my-zsh
     pkgs.nwg-displays
     pkgs.teams-for-linux
+    pkgs.vesktop
+    pkgs.docker
+    pkgs.docker-compose
+
     pkgs.qjackctl
     pkgs.alsa-utils
     pkgs.carla
@@ -42,9 +44,14 @@
 
 	pkgs.ags
 	pkgs.material-symbols
-	pkgs.nerd-fonts
+	pkgs.nerd-fonts._0xproto
+	pkgs.nerd-fonts.jetbrains-mono
+	pkgs.nerd-fonts.symbols-only
 	pkgs.fastfetch
-	pkgs.uwufetch
+	pkgs.hyfetch
+
+    pkgs.catppuccin-gtk
+    pkgs.catppuccin-papirus-folders  # Catppuccin icons ONLY
 
     inputs.zen-browser.packages.x86_64-linux.default
     # # It is sometimes useful to fine-tune packages, for example, by applying
@@ -93,41 +100,23 @@
   #  /etc/profiles/per-user/kronii/etc/profile.d/hm-session-vars.sh
   #
   systemd.user.services.carla = {
-  Unit.Description = "Carla";
-  Install.WantedBy = [ "default.target" ];
+    Unit.Description = "Carla";
+    Install.WantedBy = [ "default.target" ];
 
-  Service = {
-    ExecStart = "${pkgs.carla}/bin/carla  /home/kronii/.config/sound-patch.carxp";
-    Restart = "always";
-  };
+    Service = {
+      ExecStart = "${pkgs.carla}/bin/carla  /home/kronii/.config/sound-patch.carxp";
+      Restart = "always";
+    };
   };
   systemd.user.services.qjackctl = {
     Unit = {
       Description = "QJackCtl on Hyprland WS10 Silent";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
     };
-    Install.WantedBy = [ "graphical-session.target" ];
+    Install.WantedBy = [ "default.target" ];
     Service = {
-      Type = "oneshot";
-      RemainAfterExit = "true";
-      ExecStart = "${pkgs.hyprland}/bin/hyprctl dispatch exec \"[workspace 10 silent] ${pkgs.qjackctl}/bin/qjackctl\"";
-      Restart= "always";
+      ExecStart = "${pkgs.qjackctl}/bin/qjackctl";
+      Restart = "always";
     };
-  };
-
-  programs.matshell= {
-    # Enable the basic shell
-    enable = true;
-    # Enable a systemd service for matshell
-    autostart = true;
-    # Compositor you are using. Defaults to hyprland.
-    compositor = "hyprland";
-    # This sets up the entire matugen config & templates.
-    # If you already have matugen set up you may want to omit this.
-    # To use the hyprland/hyprlock templates, you would still need to
-    # import the generated files and add the color aliases to your config as desired.
-    matugenConfig = true;
   };
 
   programs.git = {
@@ -141,15 +130,13 @@
     };
   };
 
-
-
   home.sessionVariables = {
   };
 
   catppuccin = {
     enable = true;
     flavor = "mocha";
-    accent = "purple";
+    accent = "mauve";
   };
 
   programs.spicetify =
