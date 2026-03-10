@@ -3,28 +3,15 @@
 {
   services.pipewire = {
     enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+
     wireplumber = {
       enable = true;
       extraConfig = {
         "routing" = {
-		  "stream.rules" = [
-            {
-              matches = [ { "application.process.binary" = "spotify"; } ];  # Exact from clients
-              actions = {
-                "update-props" = {
-                  "target.object" = "input.Spotify";  # Match node.name
-                  "node.dont-fallback" = "true";  # Fail if no Spotify sink
-                };
-              };
-            }
-            {
-              matches = [ { "application.process.binary" = "Zen"; } ];
-              actions.update-props = {
-                "target.object" = "input.Browser";
-                "node.dont-fallback" = "true";
-              };
-            }
-          ];
           "default.rules" = [
             {
               matches = [
@@ -34,10 +21,10 @@
               ];
             }
           ];
-		};
-	  };
-	};
-	extraConfig.pipewire."10-virt-sinks" = {
+        };
+      };
+    };
+	  extraConfig.pipewire."10-virt-sinks" = {
       "context.modules" = [
         {
           name = "libpipewire-module-loopback";
@@ -150,10 +137,5 @@
         }
       ];
     };
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-
   };
 }
