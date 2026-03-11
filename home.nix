@@ -3,7 +3,6 @@
   imports = [ 
     inputs.catppuccin.homeModules.catppuccin
     inputs.spicetify-nix.homeManagerModules.default
-    inputs.matshell.homeManagerModules.default
   ];
 
   home.username = "kronii";
@@ -39,8 +38,10 @@
     pkgs.docker
     pkgs.docker-compose
     pkgs.fastfetch
-    pkgs.hyfetch  
-    pkgs.wofi  
+    pkgs.hyfetch
+    pkgs.wofi
+    pkgs.catppuccin-gtk
+    pkgs.catppuccin-papirus-folders  # Catppuccin icons ONLY
 
     # programs    
     pkgs.jetbrains.idea

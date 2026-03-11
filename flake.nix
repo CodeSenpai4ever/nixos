@@ -3,10 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    hyprland.url = "github:hyprwm/Hyprland";
     catppuccin.url = "github:catppuccin/nix";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
- 
+    matshell.url = "github:Neurarian/matshell";
+    musnix  = { url = "github:musnix/musnix"; };
     
     hyprquickshot = {
       url = "github:jamdon2/hyprquickshot";
