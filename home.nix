@@ -89,17 +89,12 @@
   };
 
   # ==================================================================
-  #                    dots-hyprland / matshell bar
+  #                    dots-hyprland (illogical-impulse)
   # ==================================================================
-  # Set enable = true to install the Material Design shell bar and all
-  # supporting utilities.  Set it to false (or remove the block) and
-  # rebuild to uninstall everything.
-  dotsHyprland = {
-    enable        = true;
-    compositor    = "hyprland";
-    autostart     = true;
-    matugenConfig = true;
-  };
+  # Set enable = true to install the end-4/dots-hyprland Quickshell bar
+  # and all supporting utilities.  Set it to false (or remove the block)
+  # and rebuild to uninstall everything.
+  dotsHyprland.enable = true;
 
   catppuccin = {
     enable = true;

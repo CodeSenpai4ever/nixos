@@ -7,8 +7,21 @@
     catppuccin.url = "github:catppuccin/nix";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
-    matshell.url = "github:Neurarian/matshell";
     musnix  = { url = "github:musnix/musnix"; };
+
+    # end-4/dots-hyprland (illogical-impulse Quickshell desktop)
+    # flake = false because dots-hyprland is not a flake; nix treats it as a
+    # plain source tree pinned in flake.lock.  Run `nix flake update
+    # dots-hyprland` to pull the latest upstream commit.
+    dots-hyprland = {
+      url   = "github:end-4/dots-hyprland";
+      flake = false;
+    };
+
+    # Quickshell – the QtQuick-based widget system used by dots-hyprland.
+    # Using the upstream flake so we always get the version that matches the
+    # dots config rather than whatever is in nixpkgs at a given time.
+    quickshell.url = "github:quickshell-mirror/quickshell";
     
     hyprquickshot = {
       url = "github:jamdon2/hyprquickshot";
