@@ -3,6 +3,7 @@
   imports = [ 
     inputs.catppuccin.homeModules.catppuccin
     inputs.spicetify-nix.homeManagerModules.default
+    ./hyprland-dots.nix
   ];
 
   home.username = "kronii";
@@ -85,6 +86,19 @@
       };
       init.defaultBranch = "main";
     };
+  };
+
+  # ==================================================================
+  #                    dots-hyprland / matshell bar
+  # ==================================================================
+  # Set enable = true to install the Material Design shell bar and all
+  # supporting utilities.  Set it to false (or remove the block) and
+  # rebuild to uninstall everything.
+  dotsHyprland = {
+    enable        = true;
+    compositor    = "hyprland";
+    autostart     = true;
+    matugenConfig = true;
   };
 
   catppuccin = {
