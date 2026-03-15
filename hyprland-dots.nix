@@ -182,7 +182,7 @@ in
         };
         Install.WantedBy = [ "graphical-session.target" ];
         Service = {
-          ExecStart    = "${qs}/bin/quickshell -p ii";
+          ExecStart    = "${qs}/bin/quickshell -c ii";
           Restart      = "on-failure";
           # Give Hyprland a moment to finish initialising
           ExecStartPre = "${pkgs.coreutils}/bin/sleep 1";
