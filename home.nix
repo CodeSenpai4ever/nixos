@@ -3,6 +3,7 @@
   imports = [ 
     inputs.catppuccin.homeModules.catppuccin
     inputs.spicetify-nix.homeManagerModules.default
+    ./hyprland-dots.nix
   ];
 
   home.username = "kronii";
@@ -86,6 +87,14 @@
       init.defaultBranch = "main";
     };
   };
+
+  # ==================================================================
+  #                    dots-hyprland (illogical-impulse)
+  # ==================================================================
+  # Set enable = true to install the end-4/dots-hyprland Quickshell bar
+  # and all supporting utilities.  Set it to false (or remove the block)
+  # and rebuild to uninstall everything.
+  dotsHyprland.enable = true;
 
   catppuccin = {
     enable = true;
