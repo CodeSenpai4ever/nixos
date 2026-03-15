@@ -116,11 +116,20 @@ in
           DOTS="${src}/dots"
 
           $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \
+            "$HOME/.config/hypr" \
             "$HOME/.config/quickshell" \
             "$HOME/.config/matugen" \
             "$HOME/.config/fuzzel" \
             "$HOME/.config/wlogout" \
             "$HOME/.local/share/icons"
+
+          # The original broken rsync may have left ~/.config/hypr/ and its
+          # subdirectories with read-only permissions (copied from the Nix
+          # store with rsync -a). Home Manager needs to write symlinks into it
+          # (e.g. hypridle.conf), so repair directory permissions recursively.
+          # -R with capital X only sets execute on directories, not on files,
+          # so user-created files inside are not affected.
+          $DRY_RUN_CMD ${pkgs.coreutils}/bin/chmod -R u+rwX "$HOME/.config/hypr"
 
           # rsync flags:
           #   -a         archive (preserves timestamps, symlinks, etc.)
