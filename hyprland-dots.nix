@@ -36,14 +36,15 @@ in
     (lib.mkIf (!cfg.enable) {
       home.activation.cleanupDotsHyprland =
         lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          _sentinel="$HOME/.config/quickshell/.dots-hyprland-installed"
+          _sentinel="$HOME/.local/share/.dots-hyprland-installed"
           if [ -f "$_sentinel" ]; then
             $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -rf \
               "$HOME/.config/quickshell" \
               "$HOME/.config/matugen" \
               "$HOME/.config/fuzzel" \
               "$HOME/.config/wlogout" \
-              "$HOME/.local/share/icons/Bibata-Original-Classic"
+              "$HOME/.local/share/icons/Bibata-Original-Classic" \
+              "$_sentinel"
           fi
         '';
     })
@@ -121,22 +122,30 @@ in
             "$HOME/.config/wlogout" \
             "$HOME/.local/share/icons"
 
-          # Quickshell illogical-impulse bar config
-          $DRY_RUN_CMD $RSYNC -a "$DOTS/.config/quickshell/" "$HOME/.config/quickshell/"
-          # Color-scheme generation templates
-          $DRY_RUN_CMD $RSYNC -a "$DOTS/.config/matugen/"    "$HOME/.config/matugen/"
-          # App launcher
-          $DRY_RUN_CMD $RSYNC -a "$DOTS/.config/fuzzel/"     "$HOME/.config/fuzzel/"
-          # Logout screen
-          $DRY_RUN_CMD $RSYNC -a "$DOTS/.config/wlogout/"    "$HOME/.config/wlogout/"
-          # Cursor icons
-          $DRY_RUN_CMD $RSYNC -a "$DOTS/.local/share/icons/" "$HOME/.local/share/icons/"
+          # rsync flags:
+          #   -a         archive (preserves timestamps, symlinks, etc.)
+          #   --chmod=u+rwX  ensure all copied files/dirs are user-writable;
+          #               the Nix store is read-only so without this flag the
+          #               destination directories end up with r-x permissions,
+          #               which breaks matugen colour writes and the sentinel.
+          RSYNC_FLAGS="-a --chmod=u+rwX"
 
-          # Sentinel: written only when the install actually ran (not in dry-run).
-          # The cleanup script uses this to know the files were installed by this
-          # module and are safe to remove on disable.
+          # Quickshell illogical-impulse bar config
+          $DRY_RUN_CMD $RSYNC $RSYNC_FLAGS "$DOTS/.config/quickshell/" "$HOME/.config/quickshell/"
+          # Color-scheme generation templates
+          $DRY_RUN_CMD $RSYNC $RSYNC_FLAGS "$DOTS/.config/matugen/"    "$HOME/.config/matugen/"
+          # App launcher
+          $DRY_RUN_CMD $RSYNC $RSYNC_FLAGS "$DOTS/.config/fuzzel/"     "$HOME/.config/fuzzel/"
+          # Logout screen
+          $DRY_RUN_CMD $RSYNC $RSYNC_FLAGS "$DOTS/.config/wlogout/"    "$HOME/.config/wlogout/"
+          # Cursor icons
+          $DRY_RUN_CMD $RSYNC $RSYNC_FLAGS "$DOTS/.local/share/icons/" "$HOME/.local/share/icons/"
+
+          # Sentinel written to ~/.local/share/ (always user-writable) so that
+          # the cleanup activation can detect files installed by this module.
+          # Only written when not in dry-run mode.
           if [ -z "''${DRY_RUN_CMD:-}" ]; then
-            ${pkgs.coreutils}/bin/touch "$HOME/.config/quickshell/.dots-hyprland-installed"
+            ${pkgs.coreutils}/bin/touch "$HOME/.local/share/.dots-hyprland-installed"
           fi
         '';
 
