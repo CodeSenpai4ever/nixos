@@ -110,26 +110,41 @@ in
       # ~/.config/hypr/  is intentionally excluded so your keyboard layout,
       # monitor setup and keybinds are preserved.
       # ~/.config/kitty/ is excluded for the same reason — it's your terminal.
+
+      # This early activation must run before checkLinkTargets so that any
+      # regular files left in ~/.config/hypr/ by the original broken rsync
+      # (which wrongly copied the whole hypr tree from the Nix store) are
+      # removed before Home Manager checks for symlink conflicts.  It also
+      # repairs the directory permissions so the later linkGeneration step
+      # can write symlinks into it.
+      home.activation.repairHyprDir =
+        lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+          HYPR="$HOME/.config/hypr"
+          if [ -d "$HYPR" ]; then
+            # Fix any read-only directory permissions left by the old rsync -a.
+            $DRY_RUN_CMD ${pkgs.coreutils}/bin/chmod -R u+rwX "$HYPR"
+            # Remove regular files (not symlinks) that Home Manager will
+            # manage as symlinks (e.g. hypridle.conf from services.hypridle).
+            # Leaving them as plain files causes checkLinkTargets to abort.
+            for f in hypridle.conf hyprlock.conf; do
+              if [ -f "$HYPR/$f" ] && [ ! -L "$HYPR/$f" ]; then
+                $DRY_RUN_CMD ${pkgs.coreutils}/bin/rm -f "$HYPR/$f"
+              fi
+            done
+          fi
+        '';
+
       home.activation.installDotsHyprland =
         lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           RSYNC="${pkgs.rsync}/bin/rsync"
           DOTS="${src}/dots"
 
           $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \
-            "$HOME/.config/hypr" \
             "$HOME/.config/quickshell" \
             "$HOME/.config/matugen" \
             "$HOME/.config/fuzzel" \
             "$HOME/.config/wlogout" \
             "$HOME/.local/share/icons"
-
-          # The original broken rsync may have left ~/.config/hypr/ and its
-          # subdirectories with read-only permissions (copied from the Nix
-          # store with rsync -a). Home Manager needs to write symlinks into it
-          # (e.g. hypridle.conf), so repair directory permissions recursively.
-          # -R with capital X only sets execute on directories, not on files,
-          # so user-created files inside are not affected.
-          $DRY_RUN_CMD ${pkgs.coreutils}/bin/chmod -R u+rwX "$HOME/.config/hypr"
 
           # rsync flags:
           #   -a         archive (preserves timestamps, symlinks, etc.)
